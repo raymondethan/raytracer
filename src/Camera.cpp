@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdlib.h>
 #include "Camera.h"
 
 Camera::Camera(
@@ -6,9 +7,11 @@ Camera::Camera(
 	Vec3 look_at,
 	Vec3 view_up,
 	double vfov,
-	double aspect) {
+	double aspect,
+    double aperture,
+    double focus_dist) {
 
-    Vec3 u, v, w;
+    lens_radius = aperture / 2; 
     double theta = vfov * M_PI/180;
     double half_height = tan(theta/2);
     double half_width = aspect * half_height;
@@ -16,14 +19,16 @@ Camera::Camera(
     w = (look_from - look_at).unit_vec();
     u = view_up.cross(w).unit_vec();
     v = w.cross(u);
-    lower_left_corner = origin - u*half_width - v*half_height - w;
-    horizontal = u*2*half_width;
-    vertical = v*2*half_height;
+    lower_left_corner = origin - (u*half_width - v*half_height- w)*focus_dist;
+    horizontal = u*2*half_width*focus_dist;
+    vertical = v*2*half_height*focus_dist;
 }
 
-Ray Camera::get_ray(double u, double v) {
-    Vec3 direction = lower_left_corner + horizontal*u + vertical*v - origin;
-    return Ray(origin, direction);
+Ray Camera::get_ray(double s, double t) {
+    Vec3 rd = random_unit_disc() * lens_radius ;
+    Vec3 offset = u * rd.getX() + v * rd.getY();
+    Vec3 direction = lower_left_corner + horizontal*s + vertical*t - origin - offset;
+    return Ray(origin + offset, direction);
 }
 
 Vec3 Camera::random_unit_disc() {

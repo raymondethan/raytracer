@@ -21,7 +21,7 @@ Vec3 color(const Ray& r, Hitable *world, int depth) {
         Ray scattered(Vec3(0,0,0),Vec3(0,0,0));
         Vec3 attenuation;
 
-        if (depth < 25 && rec.matrl_ptr->scatter(r, rec, attenuation, scattered)) {
+        if (depth < 50 && rec.matrl_ptr->scatter(r, rec, attenuation, scattered)) {
             return attenuation*color(scattered, world, depth+1);
          }
         return Vec3(0,0,0);
@@ -120,12 +120,18 @@ int main(int argc, const char * argv[]) {
     Vec3 horizontal(4,0,0);
     Vec3 vertical(0,2,0);
     Vec3 origin(0,0,0);
+    Vec3 look_from(3,3,2);
+    Vec3 look_at(0,0,-1);
+    double dist_to_focus = (look_from - look_at).length();
+    double aperture = 2;
     Camera camera(
-        Vec3(-2,2,1),
-		Vec3(0,0,-1),
+        look_from,
+        look_at,
 		Vec3(0,1,0),
-		40,
-		double(width)/double(height)
+		20,
+		double(width)/double(height),
+        aperture,
+        dist_to_focus
     );
     int num_items = 5;
     Hitable *list[num_items];

@@ -10,7 +10,9 @@ class Camera {
         	Vec3 look_at,
         	Vec3 view_up,
             double vfov,
-            double aspect
+            double aspect,
+            double aperture,
+            double focus_dist
         );
         Ray get_ray(double, double);
         static Vec3 random_unit_disc();
@@ -19,6 +21,8 @@ class Camera {
         Vec3 lower_left_corner;
         Vec3 horizontal;
         Vec3 vertical;
+        Vec3 u, v, w;
+        double lens_radius;
 };
 
 #endif
