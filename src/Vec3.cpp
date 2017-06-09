@@ -13,11 +13,6 @@ Vec3::Vec3(double x, double y, double z) : vec(3), size(3) {
 
 Vec3::Vec3(std::vector<double> data) : Vec3(data[0],data[1],data[2]) {}
 
-//Vec3& operator=(Vec3 &data) {
-//    Vec3 tmp(data.getVec());
-//    return tmp;
-//}
-
 bool Vec3::equals(Vec3& other) {
     return (vec == other.getVec());
 }
@@ -55,16 +50,23 @@ Vec3 Vec3::operator-() const { return Vec3(-vec[0], -vec[1], -vec[2]); }
 Vec3 Vec3::operator+(const Vec3 &rhs) const {
     std::vector<double> new_vec(3);
     for (size_t i = 0; i < size; ++i) {
-        new_vec.push_back(this->operator[](i) + rhs[i]);
+        new_vec[i] = this->operator[](i) + rhs[i];
     }
     Vec3 tmp(new_vec);
-    std::cerr << "operator + for 2 vecs" << std::endl;
-    std::cerr << tmp.to_string() << std::endl;
     return tmp;
 }
 Vec3 Vec3::operator-(const Vec3 &rhs) const {
     Vec3 tmp = -rhs;
     return this->operator+(tmp);
+}
+ 
+Vec3 Vec3::operator*(const Vec3 &rhs) const {
+    std::vector<double> new_vec(3);
+    for (size_t i = 0; i < size; ++i) {
+        new_vec[i] = this->operator[](i) * rhs[i];
+    }
+    Vec3 tmp(new_vec);
+    return tmp;
 }
 
 double Vec3::operator[](std::size_t i) const {
@@ -106,15 +108,43 @@ Vec3 Vec3::operator-=(double t) {
 
 Vec3 Vec3::operator*(double t) const {
     std::vector<double> new_vec(3);
-    std::cerr << "* operator with int: " << std::endl;
     for (std::size_t i = 0; i < size; ++i) {
-        new_vec.push_back(vec[i]*t);
+        new_vec[i] = vec[i]*t;
     }
     Vec3 tmp(new_vec);
-    std::cerr << "just created tmp" << std::endl;
-    std::cerr << tmp.to_string() << std::endl;
-    std::cerr << "just printed tmp" << std::endl;
     return tmp;
+}
+
+Vec3 Vec3::operator/(double t) const {
+    return this->operator*(1.0/t);
+}
+
+Vec3 Vec3::unit_vec() const {
+    return *this / this->norm();
+}
+
+double Vec3::dot(const Vec3 &rhs) const {
+    double sum = 0;
+    for (size_t i = 0; i < size; ++i) {
+        sum += vec[i] * rhs[i];
+    }
+    return sum;
+}
+
+Vec3 Vec3::cross(const Vec3 &rhs) const {
+    return Vec3(
+        vec[1]*rhs[2] - vec[2]*rhs[1],
+        vec[2]*rhs[0] - vec[0]*rhs[2],
+        vec[0]*rhs[1] - vec[1]*rhs[0]
+    );
+}
+
+std::size_t Vec3::length() const {
+    return size;
+}
+
+double Vec3::norm() const {
+    return sqrt(pow(vec[0],2) + pow(vec[1],2) + pow(vec[2],2));
 }
 
 std::string Vec3::to_string() const {
@@ -125,4 +155,24 @@ std::string Vec3::to_string() const {
     }
     result += std::to_string(vec[size-1]);
     return result;
+}
+
+Vec3 Vec3::reflect(const Vec3 &v, const Vec3 &n) {
+    return v - n*v.dot(n)*2;
+}
+
+bool Vec3::refract(
+    const Vec3 &v,
+	const Vec3 &n,
+	double ni_over_nt,
+	Vec3 &refracted) {
+
+    Vec3 uv = v.unit_vec();
+    double dt = uv.dot(n);
+    double discriminant = 1 - ni_over_nt*ni_over_nt*(1-dt*dt);
+    if (discriminant > 0) {
+        refracted = (uv - n*dt)*ni_over_nt - n*sqrt(discriminant);
+        return true;
+    }
+    return false;
 }

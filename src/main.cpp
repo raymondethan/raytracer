@@ -3,9 +3,33 @@
 #include <assert.h>
 #include <string>
 #include <fstream>
+#include <float.h>
+#include <math.h>
 
 #include "Vec3.h"
 #include "Ray.h"
+#include "Sphere.h"
+#include "HitableList.h"
+#include "Camera.h"
+#include "Lambertian.h"
+#include "Metal.h"
+#include "Dielectric.h"
+
+Vec3 color(const Ray& r, Hitable *world, int depth) {
+    HitRecord rec;
+    if (world->hit(r, 0.001, DBL_MAX, rec)) {
+        Ray scattered(Vec3(0,0,0),Vec3(0,0,0));
+        Vec3 attenuation;
+
+        if (depth < 25 && rec.matrl_ptr->scatter(r, rec, attenuation, scattered)) {
+            return attenuation*color(scattered, world, depth+1);
+         }
+        return Vec3(0,0,0);
+    }
+    Vec3 dir = r.direction.unit_vec();
+    double t = .5*(dir.getY() + 1.0);
+    return Vec3(1, 1, 1)*(1.0-t) + Vec3(.5, .7, 1)*t;
+}
 
 int main(int argc, const char * argv[]) {
     std::cout << "Program start" << std::endl;
@@ -51,8 +75,20 @@ int main(int argc, const char * argv[]) {
         p2 += -p;
         assert(p2.getX() == 0 && p2.getY() == 0 && p2.getZ() == 1);
         
-        std::cout << p.to_string() << std::endl;
         assert(p.to_string().compare("1.000000 1.000000 1.000000") == 0);
+
+        Vec3 p4(2,2,2);
+        p4 = p4/2;
+        assert(p4.getX() == 1 && p4.getY() == 1 && p4.getZ() == 1);
+
+        double dot = p3.dot(p2);
+        assert(dot == -2);
+
+        p3 = Vec3(2,0,1);
+        p2 = Vec3(1,2,1);
+        p = p3.cross(p2);
+        std::cout << p.to_string() << std::endl;
+        assert(p.getX() == -2 && p.getY() == -1 && p.getZ() == 4);
         
         std::cout << "Vec3 passes tests" << std::endl;
 
@@ -60,24 +96,60 @@ int main(int argc, const char * argv[]) {
         Vec3 direction(1,1,1);
         Ray r1(origin, direction);
         Vec3 pt = r1.get_point_at(1);
-        std::cout << pt.to_string() << std::endl;
         Vec3 answer = Vec3(1,1,1);
         assert(pt.equals(answer));
         
         std::cout << "Ray passes tests" << std::endl;
+
+        Vec3 center(0,0,0);
+        Sphere sphere(center, 1, new Lambertian(Vec3(.8,.3,.3)));
+        p = Vec3(0,0,1);
+        assert(sphere.intersect_point(p));
+
+        std::cout << "Sphere passes tests" << std::endl;
+        return 0;
     }
 
     std::ofstream file;
     file.open("img.ppm");
     int width = 200;
     int height = 100;
+    int ns = 100;
     file << "P3\n" << width << " " << height << "\n255\n";
+    Vec3 lower_left(-2,-1,-1);
+    Vec3 horizontal(4,0,0);
+    Vec3 vertical(0,2,0);
+    Vec3 origin(0,0,0);
+    Camera camera(
+        Vec3(-2,2,1),
+		Vec3(0,0,-1),
+		Vec3(0,1,0),
+		40,
+		double(width)/double(height)
+    );
+    int num_items = 5;
+    Hitable *list[num_items];
+    list[0] = new Sphere(Vec3(0,0,-1), .5, new Lambertian(Vec3(.8,.3,.3)));
+    list[1] = new Sphere(Vec3(0,-100.5,-1), 100, new Lambertian(Vec3(.8,.8,0)));
+    list[2] = new Sphere(Vec3(1,0,-1), .5, new Metal(Vec3(.8,.6,.2),.3));
+    list[3] = new Sphere(Vec3(-1,0,-1), .5, new Dielectric(1.5));
+    list[4] = new Sphere(Vec3(-1,0,-1), -.45, new Dielectric(1.5));
+    HitableList *world = new HitableList(list, num_items);
     for (int j = height; j>= 0; --j) {
         for (int i = 0; i < width; ++i) {
-            Vec3 vec(float(i) / float(width),float(j) / float(height),.2);
-            int ir = (255.99*vec.getR());
-            int ig = (255.99*vec.getG());
-            int ib = (255.99*vec.getB());
+            Vec3 rgb(0,0,0);
+            for (size_t n = 0; n < ns; ++n) {
+                double u = double(i + drand48()) / double(width);
+                double v = double(j + drand48()) / double(height);
+                Ray r = camera.get_ray(u, v);
+                Vec3 vec = color(r, world, 0);
+                rgb += vec;
+
+            }
+            rgb = rgb / ns;
+            int ir = (255.99*sqrt(rgb.getR()));
+            int ig = (255.99*sqrt(rgb.getG()));
+            int ib = (255.99*sqrt(rgb.getB()));
             file << ir << " " << ig << " " << ib << "\n";
         }
     }
