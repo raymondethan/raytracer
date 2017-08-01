@@ -6,16 +6,16 @@
 class Camera {
     public:
         Camera(
-            Vec3 look_from,
-        	Vec3 look_at,
-        	Vec3 view_up,
+            Vec3 &look_from,
+        	Vec3 &look_at,
+        	Vec3 &view_up,
             double vfov,
             double aspect,
             double aperture,
             double focus_dist
         );
         Ray get_ray(double, double);
-        static Vec3 random_unit_disc();
+        static Vec3 random_in_unit_disc();
 
         Vec3 origin;
         Vec3 lower_left_corner;

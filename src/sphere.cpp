@@ -1,4 +1,4 @@
-#include "sphere.h"
+#include "Sphere.h"
 #include <math.h>
 
 Sphere::Sphere(Vec3 center, double radius, Material *matrl_ptr) :
@@ -17,8 +17,8 @@ bool Sphere::hit(
     HitRecord &record
 ) const {
     //if (intersect_point(r.origin)) { return true; }
-    record.matrl_ptr = matrl_ptr;
-    Vec3 oc = r.origin - center;
+    record.matrl_ptr = this.matrl_ptr;
+    Vec3 oc = r.origin - this.center;
     double a = r.direction.dot(r.direction);
     double b = 2.0*(oc.dot(r.direction));
     double c = oc.dot(oc) - radius*radius;

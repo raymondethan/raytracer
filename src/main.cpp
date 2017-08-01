@@ -87,8 +87,10 @@ int main(int argc, const char * argv[]) {
         p3 = Vec3(2,0,1);
         p2 = Vec3(1,2,1);
         p = p3.cross(p2);
-        std::cout << p.to_string() << std::endl;
         assert(p.getX() == -2 && p.getY() == -1 && p.getZ() == 4);
+        
+        p3 = p3.unit_vec();
+        assert(p3.norm() < 1.01 && p3.norm() > .999);
         
         std::cout << "Vec3 passes tests" << std::endl;
 
@@ -120,15 +122,17 @@ int main(int argc, const char * argv[]) {
     Vec3 horizontal(4,0,0);
     Vec3 vertical(0,2,0);
     Vec3 origin(0,0,0);
-    Vec3 look_from(3,3,2);
+    Vec3 look_from(1,2,2);
     Vec3 look_at(0,0,-1);
-    double dist_to_focus = (look_from - look_at).length();
+    Vec3 vew_up(0,1,0);
+    double dist_to_focus = (look_from - look_at).norm();
+    std::cout << "focus: " << dist_to_focus << std::endl;
     double aperture = 2;
     Camera camera(
         look_from,
         look_at,
-		Vec3(0,1,0),
-		20,
+        vew_up,
+		40,
 		double(width)/double(height),
         aperture,
         dist_to_focus

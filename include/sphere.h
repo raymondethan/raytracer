@@ -4,7 +4,7 @@
 #include <iostream>
 #include "Vec3.h"
 #include "Ray.h"
-#include "hitable.h"
+#include "Hitable.h"
 #include "Material.h"
 
 class Sphere : public Hitable {

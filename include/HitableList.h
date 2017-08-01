@@ -1,7 +1,7 @@
 #ifndef HITABLELIST
 #define HITABLELIST
 
-#include "hitable.h"
+#include "Hitable.h"
 
 class HitableList : public Hitable {
     public:
