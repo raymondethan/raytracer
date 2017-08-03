@@ -114,8 +114,8 @@ int main(int argc, const char * argv[]) {
 
     std::ofstream file;
     file.open("img.ppm");
-    int width = 600;
-    int height = 300;
+    int width = 200;
+    int height = 100;
     int ns = 100;
     file << "P3\n" << width << " " << height << "\n255\n";
     Vec3 lower_left(-2,-1,-1);

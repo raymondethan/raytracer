@@ -10,5 +10,5 @@ add_executable(raytracer ${SOURCES})
 
 ## Compiler flags
 if(CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "-O2")        ## Optimize
+    set(CMAKE_CXX_FLAGS "-O3")        ## Optimize
 endif()
