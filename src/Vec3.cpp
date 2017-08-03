@@ -3,15 +3,15 @@
 
 #include "Vec3.h"
 
-Vec3::Vec3() : vec(3), size(3) {}
+Vec3::Vec3() {}
 
-Vec3::Vec3(double x, double y, double z) : vec(3), size(3) {
+Vec3::Vec3(double x, double y, double z) {
     this->vec[0] = x;
     this->vec[1] = y;
     this->vec[2] = z;
 }
 
-Vec3::Vec3(std::vector<double> data) : Vec3(data[0],data[1],data[2]) {}
+Vec3::Vec3(const double data[]) : Vec3(data[0],data[1],data[2]) {}
 
 bool Vec3::equals(Vec3& other) {
     return (vec == other.getVec());
@@ -41,14 +41,14 @@ double Vec3::getR() { return this->getX(); }
 double Vec3::getG() { return this->getY(); }
 double Vec3::getB() { return this->getZ(); }
 
-std::vector<double>& Vec3::getVec() {
+double* Vec3::getVec() {
     return vec;
 }
 
 Vec3 Vec3::operator+() const { return Vec3(this->vec); }
 Vec3 Vec3::operator-() const { return Vec3(-vec[0], -vec[1], -vec[2]); }
 Vec3 Vec3::operator+(const Vec3 &rhs) const {
-    std::vector<double> new_vec(3);
+    double new_vec[3];
     for (size_t i = 0; i < size; ++i) {
         new_vec[i] = this->operator[](i) + rhs[i];
     }
@@ -61,7 +61,7 @@ Vec3 Vec3::operator-(const Vec3 &rhs) const {
 }
  
 Vec3 Vec3::operator*(const Vec3 &rhs) const {
-    std::vector<double> new_vec(3);
+    double new_vec[3];
     for (size_t i = 0; i < size; ++i) {
         new_vec[i] = this->operator[](i) * rhs[i];
     }
@@ -107,7 +107,7 @@ Vec3 Vec3::operator-=(double t) {
 }
 
 Vec3 Vec3::operator*(double t) const {
-    std::vector<double> new_vec(3);
+    double new_vec[3];
     for (std::size_t i = 0; i < size; ++i) {
         new_vec[i] = vec[i]*t;
     }

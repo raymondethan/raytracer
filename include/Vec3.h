@@ -10,7 +10,7 @@ class Vec3 {
     public:
         Vec3();
         Vec3(double x, double y, double z);
-        Vec3(std::vector<double> data);
+        Vec3(const double data[]);
         bool equals(Vec3& vec2);
         
         double distanceFrom(Vec3 *other);
@@ -22,7 +22,7 @@ class Vec3 {
         double getG();
         double getB();
 
-        std::vector<double>& getVec();
+        double* getVec();
 
         Vec3 operator+() const;
         Vec3 operator-() const;
@@ -54,8 +54,8 @@ class Vec3 {
         std::string to_string() const;
         
     private:
-        std::vector<double> vec;
-        std::size_t size;
+        double vec[3];
+        std::size_t size = 3;
 };
 
 #endif
