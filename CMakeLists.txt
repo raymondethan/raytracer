@@ -9,6 +9,7 @@ file(GLOB SOURCES "src/*.cpp")
 add_executable(raytracer ${SOURCES})
 
 ## Compiler flags
+set(CMAKE_CXX_FLAGS "-g")
 if(CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "-O3")        ## Optimize
+    set(CMAKE_CXX_FLAGS "-Ofast")        ## Optimize
 endif()

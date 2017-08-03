@@ -25,4 +25,19 @@ class Camera {
         double lens_radius;
 };
 
+inline Ray Camera::get_ray(double s, double t) {
+    Vec3 rd = random_in_unit_disc() * lens_radius;
+    Vec3 offset = u * rd.getX() + v * rd.getY();
+    Vec3 direction = lower_left_corner + horizontal*s + vertical*t - origin - offset;
+    return Ray(origin + offset, direction);
+}
+
+inline Vec3 Camera::random_in_unit_disc() {
+    Vec3 p;
+    do {
+        p = Vec3(drand48(), drand48(), 0)*2 - Vec3(1,1,0);
+    } while (p.dot(p) >= 1);
+    return p;
+}
+
 #endif
