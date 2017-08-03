@@ -16,9 +16,8 @@ bool Sphere::hit(
     double t_max,
     HitRecord &record
 ) const {
-    //if (intersect_point(r.origin)) { return true; }
-    record.matrl_ptr = this.matrl_ptr;
-    Vec3 oc = r.origin - this.center;
+    record.matrl_ptr = this->matrl_ptr;
+    Vec3 oc = r.origin - this->center;
     double a = r.direction.dot(r.direction);
     double b = 2.0*(oc.dot(r.direction));
     double c = oc.dot(oc) - radius*radius;

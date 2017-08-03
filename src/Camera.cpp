@@ -34,7 +34,6 @@ Ray Camera::get_ray(double s, double t) {
 
 Vec3 Camera::random_in_unit_disc() {
     Vec3 p;
-    //Vec3 sub(1,1,0);
     do {
         p = Vec3(drand48(), drand48(), 0)*2 - Vec3(1,1,0);
     } while (p.dot(p) >= 1);
