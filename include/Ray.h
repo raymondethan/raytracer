@@ -6,7 +6,7 @@
 class Ray {
     public:
         Ray(Vec3 origin, Vec3 direction);
-        Vec3 get_point_at(double t) const;
+        void get_point_at(double t, Vec3 &ret_pt) const;
 
         Vec3 origin;
         Vec3 direction;

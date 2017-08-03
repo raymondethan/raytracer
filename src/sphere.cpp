@@ -17,8 +17,8 @@ bool Sphere::hit(
     HitRecord &record
 ) const {
     //if (intersect_point(r.origin)) { return true; }
-    record.matrl_ptr = this.matrl_ptr;
-    Vec3 oc = r.origin - this.center;
+    record.matrl_ptr = this->matrl_ptr;
+    Vec3 oc = r.origin - this->center;
     double a = r.direction.dot(r.direction);
     double b = 2.0*(oc.dot(r.direction));
     double c = oc.dot(oc) - radius*radius;
@@ -27,14 +27,15 @@ bool Sphere::hit(
     double tmp = (-b - sqrt(discriminant)) / (2.0*a);
     if (tmp < t_max && tmp > t_min) {
         record.t = tmp;
-        record.p = r.get_point_at(record.t);
+        // instead of returning and copying, I could pass a val to modify
+        r.get_point_at(record.t, record.p);
         record.normal = (record.p - center) / radius;
         return true;
     }
     tmp = (-b + sqrt(discriminant)) / (2.0*a);
     if (tmp < t_max && tmp > t_min) {
         record.t = tmp;
-        record.p = r.get_point_at(record.t);
+        r.get_point_at(record.t, record.p);
         record.normal = (record.p - center) / radius;
         return true;
     }

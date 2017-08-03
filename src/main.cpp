@@ -97,7 +97,8 @@ int main(int argc, const char * argv[]) {
         Vec3 origin(0,0,0);
         Vec3 direction(1,1,1);
         Ray r1(origin, direction);
-        Vec3 pt = r1.get_point_at(1);
+        Vec3 pt;
+        r1.get_point_at(1, pt);
         Vec3 answer = Vec3(1,1,1);
         assert(pt.equals(answer));
         
