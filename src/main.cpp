@@ -145,6 +145,7 @@ int main(int argc, const char * argv[]) {
     list[2] = new Sphere(Vec3(1,0,-1), .5, new Metal(Vec3(.8,.6,.2),.3));
     list[3] = new Sphere(Vec3(-1,0,-1), .5, new Dielectric(1.5));
     list[4] = new Sphere(Vec3(-1,0,-1), -.45, new Dielectric(1.5));
+    list[5] = new Sphere(Vec3(2,0,-2), .7, new Metal(Vec3(.3,.6,.7),.5));
     HitableList *world = new HitableList(list, num_items);
     for (int j = height; j>= 0; --j) {
         for (int i = 0; i < width; ++i) {
