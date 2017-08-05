@@ -171,6 +171,8 @@ int main(int argc, const char * argv[]) {
             file << ir << " " << ig << " " << ib << "\n";
         }
     }
+    delete world;
+    world = 0;
     file.close();
     return 0;
 }
