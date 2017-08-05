@@ -1,14 +1,11 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
-#include <iostream>
 #include <stdlib.h>
 #include "Vec3.h"
 #include "Ray.h"
 #include "Material.h"
 #include "HitRecord.h"
-
-class HitRecord;
 
 class Sphere {
     public:
