@@ -15,7 +15,7 @@
 #include "Metal.h"
 #include "Dielectric.h"
 
-Vec3 color(const Ray& r, Hitable *world, int depth) {
+Vec3 color(const Ray& r, HitableList *world, int depth) {
     HitRecord rec;
     if (world->hit(r, 0.001, DBL_MAX, rec)) {
         Ray scattered(Vec3(0,0,0),Vec3(0,0,0));
@@ -137,14 +137,20 @@ int main(int argc, const char * argv[]) {
         aperture,
         dist_to_focus
     );
-    int num_items = 5;
-    Hitable *list[num_items];
-    list[0] = new Sphere(Vec3(0,0,-1), .5, new Lambertian(Vec3(.8,.3,.3)));
-    list[1] = new Sphere(Vec3(0,-100.5,-1), 100, new Lambertian(Vec3(.8,.8,0)));
-    list[2] = new Sphere(Vec3(1,0,-1), .5, new Metal(Vec3(.8,.6,.2),.3));
-    list[3] = new Sphere(Vec3(-1,0,-1), .5, new Dielectric(1.5));
-    list[4] = new Sphere(Vec3(-1,0,-1), -.45, new Dielectric(1.5));
-    list[5] = new Sphere(Vec3(2,0,-2), .7, new Metal(Vec3(.3,.6,.7),.5));
+    int num_items = 6;
+    std::vector<Hitable> list;
+    std::shared_ptr<Material> sphere0_matrl = std::make_shared<Lambertian>(Vec3(.8,.3,.3));
+    list.push_back(Hitable(Sphere(Vec3(0,0,-1), .5, sphere0_matrl)));
+    std::shared_ptr<Material> sphere1_matrl = std::make_shared<Lambertian>(Vec3(.8,.8,0));
+    list.push_back(Hitable(Sphere(Vec3(0,-100.5,-1), 100, sphere1_matrl)));
+    std::shared_ptr<Material> sphere2_matrl = std::make_shared<Metal>(Vec3(.8,.6,.2),.3);
+    list.push_back(Hitable(Sphere(Vec3(1,0,-1), .5, sphere2_matrl)));
+    std::shared_ptr<Material> sphere3_matrl = std::make_shared<Dielectric>(1.5);
+    list.push_back(Hitable(Sphere(Vec3(-1,0,-1), .5, sphere3_matrl)));
+    std::shared_ptr<Material> sphere4_matrl = std::make_shared<Dielectric>(1.5);
+    list.push_back(Hitable(Sphere(Vec3(-1,0,-1), -.45, sphere4_matrl)));
+    std::shared_ptr<Material> sphere5_matrl = std::make_shared<Metal>(Vec3(.3,.6,.7),.5);
+    list.push_back(Hitable(Sphere(Vec3(2,0,-2), .7, sphere5_matrl)));
     HitableList *world = new HitableList(list, num_items);
     for (int j = height; j>= 0; --j) {
         for (int i = 0; i < width; ++i) {

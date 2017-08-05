@@ -2,14 +2,18 @@
 #define SPHERE_H
 
 #include <iostream>
+#include <stdlib.h>
 #include "Vec3.h"
 #include "Ray.h"
-#include "Hitable.h"
 #include "Material.h"
+#include "HitRecord.h"
 
-class Sphere : public Hitable {
+class HitRecord;
+
+class Sphere {
     public:
-        Sphere(Vec3 center, double radius, Material *matrl_ptr);
+        Sphere(Vec3 center, double radius, std::shared_ptr<Material> matrl_ptr);
+        ~Sphere();
         bool intersect_point(const Vec3 &p) const;
         bool hit(
             const Ray &r,
@@ -21,13 +25,15 @@ class Sphere : public Hitable {
     private:
         Vec3 center;
         double radius;
-        Material *matrl_ptr;
+        std::shared_ptr<Material> matrl_ptr;
 };
 
-inline Sphere::Sphere(Vec3 center, double radius, Material *matrl_ptr) :
+inline Sphere::Sphere(Vec3 center, double radius, std::shared_ptr<Material> matrl_ptr) :
     center(center),
 	radius(radius),
 	matrl_ptr(matrl_ptr) {}
+
+inline Sphere::~Sphere() {}
 
 inline bool Sphere::intersect_point(const Vec3 &p) const{
     return (p-center).norm() == radius;

@@ -3,9 +3,9 @@
 
 #include "Hitable.h"
 
-class HitableList : public Hitable {
+class HitableList {
     public:
-        HitableList(Hitable **l, int n);
+        HitableList(std::vector<Hitable> l, int n);
         virtual bool hit(
                 const Ray &r,
                 double t_min,
@@ -13,11 +13,11 @@ class HitableList : public Hitable {
                 HitRecord &rec
         ) const;
 
-        Hitable **hitables;
+        std::vector<Hitable> hitables;
         int size;
 };
 
-inline HitableList::HitableList(Hitable **l, int n) : hitables(l), size(n) {}
+inline HitableList::HitableList(std::vector<Hitable> l, int n) : hitables(l), size(n) {}
 
 inline bool HitableList::hit(
         const Ray &r,
@@ -30,7 +30,7 @@ inline bool HitableList::hit(
     bool hit_anything = false;
     double closest_so_far = t_max;
     for (size_t i = 0; i < size; ++i) {
-        if (hitables[i]->hit(r, t_min, closest_so_far, tmp_rec)) {
+        if (hitables[i].hit(r, t_min, closest_so_far, tmp_rec)) {
             hit_anything = true;
             closest_so_far = tmp_rec.t;
             rec = tmp_rec;

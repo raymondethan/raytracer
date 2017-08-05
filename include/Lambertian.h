@@ -7,6 +7,8 @@
 class Lambertian : public Material {
     public:
         Lambertian(const Vec3 &vec);
+        ~Lambertian() = default;
+
         virtual bool scatter(const Ray&, const HitRecord&, Vec3&, Ray&) const;
 
         Vec3 albedo;

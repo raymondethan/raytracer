@@ -2,10 +2,12 @@
 #define MATERIAL_H
 
 #include "Ray.h"
-#include "Hitable.h"
+#include "HitRecord.h"
 
 class Material {
     public:
+        virtual ~Material() = default;
+
         virtual bool scatter(const Ray&, const HitRecord&, Vec3&, Ray&) const = 0;
 };
 #endif

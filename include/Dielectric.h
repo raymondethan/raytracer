@@ -6,6 +6,7 @@
 class Dielectric: public Material {
     public:
         Dielectric(double ri);
+        ~Dielectric() = default;
         virtual bool scatter(const Ray&, const HitRecord&, Vec3&, Ray&) const;
 
         double ref_idx;
