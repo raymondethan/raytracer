@@ -10,6 +10,7 @@
 #include "Vec3.h"
 #include "Ray.h"
 #include "Sphere.h"
+#include "Triangle.h"
 #include "HitableList.h"
 #include "Camera.h"
 #include "Lambertian.h"
@@ -110,13 +111,34 @@ int main(int argc, const char * argv[]) {
         assert(sphere.intersect_point(p));
 
         std::cout << "Sphere passes tests" << std::endl;
+
+        // Triange tests
+        Triangle triangle = Triangle(
+            Vec3(0,0,0),
+            Vec3(1,0,0),
+            Vec3(0,1,0),
+            std::make_shared<Lambertian>(Vec3(.8,.3,.3))
+        );
+
+        Vec3 inside = Vec3(.5,.5,0);
+        assert(triangle.intersect_point(inside));
+        inside = Vec3(0,0,0);
+        assert(triangle.intersect_point(inside));
+
+        Vec3 outside = Vec3(.5,.5,.5);
+        assert(!triangle.intersect_point(outside));
+        outside = Vec3(.5,-.5,0);
+        assert(!triangle.intersect_point(outside));
+
+        std::cout << "Triangle passes tests" << std::endl;
+
         return 0;
     }
 
     std::ofstream file;
     file.open("img.ppm");
-    int width = 200;
-    int height = 100;
+    int width = 400;
+    int height = 200;
     int ns = 100;
     file << "P3\n" << width << " " << height << "\n255\n";
     Vec3 lower_left(-2,-1,-1);
