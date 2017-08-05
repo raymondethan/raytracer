@@ -105,7 +105,7 @@ int main(int argc, const char * argv[]) {
         std::cout << "Ray passes tests" << std::endl;
 
         Vec3 center(0,0,0);
-        Sphere sphere(center, 1, new Lambertian(Vec3(.8,.3,.3)));
+        Sphere sphere(center, 1, std::make_shared<Lambertian>(Vec3(.8,.3,.3)));
         p = Vec3(0,0,1);
         assert(sphere.intersect_point(p));
 

@@ -70,7 +70,12 @@ inline Vec3::Vec3(double x, double y, double z) {
 inline Vec3::Vec3(const double data[]) : Vec3(data[0],data[1],data[2]) {}
 
 inline bool Vec3::equals(Vec3& other) {
-    return (vec == other.getVec());
+    for (size_t i = 0; i < size; ++i) {
+        if (vec[i] != other[i]) {
+            return false;
+        }
+    }
+    return true;
 }
 
 inline double Vec3::distanceFrom(Vec3 *other) {
