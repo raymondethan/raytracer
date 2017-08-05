@@ -1,20 +1,25 @@
 #ifndef HITABLE
 #define HITABLE
 
+#include <stdlib.h>
+#include <variant>
+#include <iostream>
 #include "Ray.h"
-
-class Material;
-
-struct HitRecord {
-    double t;
-    Vec3 p;
-    Vec3 normal;
-    Material *matrl_ptr;
-};
+#include "HitRecord.h"
+#include "Sphere.h"
 
 class Hitable {
     public:
-        virtual bool hit(const Ray &r, double t_min, double t_max, HitRecord &rec) const = 0;
+
+        Hitable(Sphere sphere) : shape(sphere) {}
+
+        bool hit(const Ray &r, double t_min, double t_max, HitRecord &rec) const {
+            return std::visit([&r, t_min, t_max, &rec](auto&& arg) {
+                    return arg.hit(r, t_min, t_max, rec);
+            }, shape);
+        }
+
+        std::variant<Sphere> shape;
 };
 
 #endif
