@@ -17,11 +17,12 @@ class Triangle {
         ) : x(x),
 			y(y),
 			z(z),
-			xz(z - x),
 			xy(y - x),
+			xz(z - x),
 			normal(xy.cross(xz)),
-			D(normal.dot(x)),
-			matrl_ptr(matrl_ptr) {}
+			matrl_ptr(matrl_ptr) {
+                normal = normal.unit_vec();
+            }
 
         ~Triangle() {}
         bool intersect_point(const Vec3 &p) const;
@@ -36,11 +37,9 @@ class Triangle {
         Vec3 x;
         Vec3 y;
         Vec3 z;
-        Vec3 xz;
         Vec3 xy;
+        Vec3 xz;
         Vec3 normal;
-        // Ax + By + Cz + D = 0 - equation of plane
-        double D;
         std::shared_ptr<Material> matrl_ptr;
 };
 
@@ -78,17 +77,27 @@ inline bool Triangle::hit(
 ) const {
 
     record.matrl_ptr = this->matrl_ptr;
-    double normalDotDirection =  normal.dot(r.direction);
-    // ray and triangle are parallel
-    if (abs(normalDotDirection) < t_min) return false;
+    Vec3 pvec = r.direction.cross(xz);
+    double det = xy.dot(pvec);
+    if (det < t_min) return false;
+    if (abs(det) < t_min) return false;
 
-    double t = (normal.dot(r.direction) + D) / normalDotDirection;
-    std::cout << "D: " << D << ", t: " << t << std::endl;
-    // triangle is behind ray
-    if (t < 0) return false;
+    double invDet = 1 / det;
+    Vec3 tvec = r.origin - x;
+    double u = tvec.dot(pvec) * invDet;
+    if (u < 0 || u > 1) return false;
 
-    Vec3 point = r.origin + r.direction * t;
-    return intersect_point(point);
+    Vec3 qvec = tvec.cross(xy);
+    double v = r.direction.dot(qvec) * invDet;
+    if (v < 0 || u + v > 1) return false;
+
+    double t = xz.dot(qvec) * invDet;
+    if (t < t_min || t > t_max) return false;
+
+    record.t = t;
+    record.p = r.get_point_at(t);
+    record.normal = normal;
+    return true;
 }
 
 #endif
