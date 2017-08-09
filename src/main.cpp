@@ -130,8 +130,19 @@ int main(int argc, const char * argv[]) {
         outside = Vec3(.5,-.5,0);
         assert(!triangle.intersect_point(outside));
 
-        std::cout << "Triangle passes tests" << std::endl;
+        triangle = Triangle(
+            Vec3(-1,-1,-1),
+            Vec3(2,0,-1),
+            Vec3(0,2,-1),
+            std::make_shared<Lambertian>(Vec3(.8,.3,.3))
+        );
 
+        Ray ray = Ray(Vec3(.1,0.1,0.1), Vec3(0,0,-4));
+        HitRecord rec;
+        assert(triangle.hit(ray, .0001, DBL_MAX, rec));
+
+        std::cout << "Triangle passes tests" << std::endl;
+        
         return 0;
     }
 

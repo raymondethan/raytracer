@@ -14,7 +14,14 @@ class Triangle {
             Vec3 y,
             Vec3 z,
             std::shared_ptr<Material> matrl_ptr
-        ) : x(x), y(y), z(z), xz(z - x), xy(y - x), matrl_ptr(matrl_ptr) {}
+        ) : x(x),
+			y(y),
+			z(z),
+			xz(z - x),
+			xy(y - x),
+			normal(xy.cross(xz)),
+			D(normal.dot(x)),
+			matrl_ptr(matrl_ptr) {}
 
         ~Triangle() {}
         bool intersect_point(const Vec3 &p) const;
@@ -31,6 +38,9 @@ class Triangle {
         Vec3 z;
         Vec3 xz;
         Vec3 xy;
+        Vec3 normal;
+        // Ax + By + Cz + D = 0 - equation of plane
+        double D;
         std::shared_ptr<Material> matrl_ptr;
 };
 
@@ -66,7 +76,19 @@ inline bool Triangle::hit(
     double t_max,
     HitRecord &record
 ) const {
-    return false;
+
+    record.matrl_ptr = this->matrl_ptr;
+    double normalDotDirection =  normal.dot(r.direction);
+    // ray and triangle are parallel
+    if (abs(normalDotDirection) < t_min) return false;
+
+    double t = (normal.dot(r.direction) + D) / normalDotDirection;
+    std::cout << "D: " << D << ", t: " << t << std::endl;
+    // triangle is behind ray
+    if (t < 0) return false;
+
+    Vec3 point = r.origin + r.direction * t;
+    return intersect_point(point);
 }
 
 #endif
