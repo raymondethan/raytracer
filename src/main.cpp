@@ -19,6 +19,7 @@
 
 Vec3 color(const Ray& r, HitableList *world, int depth) {
     HitRecord rec;
+    // will DBL_MAX work with the -Ofast compiler flag?
     if (world->hit(r, 0.001, DBL_MAX, rec)) {
         Ray scattered(Vec3(0,0,0),Vec3(0,0,0));
         Vec3 attenuation;
@@ -131,15 +132,37 @@ int main(int argc, const char * argv[]) {
         assert(!triangle.intersect_point(outside));
 
         triangle = Triangle(
-            Vec3(-1,-1,-1),
+            Vec3(0,0,-1),
             Vec3(2,0,-1),
             Vec3(0,2,-1),
             std::make_shared<Lambertian>(Vec3(.8,.3,.3))
         );
 
-        Ray ray = Ray(Vec3(.1,0.1,0.1), Vec3(0,0,-4));
+        // test hitting triange edge
+        Ray ray = Ray(Vec3(0,0,0), Vec3(0,0,-4));
         HitRecord rec;
         assert(triangle.hit(ray, .0001, DBL_MAX, rec));
+        Vec3 reflection(0,0,4);
+        assert(rec.normal.equals(reflection));
+
+        // test hitting triangle interior
+        ray = Ray(Vec3(.5,.5,0), Vec3(0,0,-4));
+        assert(triangle.hit(ray, .0001, DBL_MAX, rec));
+        reflection = Vec3(0,0,4);
+        assert(rec.normal.equals(reflection));
+
+        ray = Ray(Vec3(0,0,0), Vec3(.1,.1,-4));
+        assert(triangle.hit(ray, .0001, DBL_MAX, rec));
+        reflection = Vec3(.1,.1,4);
+        assert(rec.normal.equals(reflection));
+
+        // test missing triangle
+        ray = Ray(Vec3(0,0,0), Vec3(4,4,-1));
+        assert(!triangle.hit(ray, .0001, DBL_MAX, rec));
+
+        // test parallel ray
+        ray = Ray(Vec3(0,0,0), Vec3(4,0,0));
+        assert(!triangle.hit(ray, .0001, DBL_MAX, rec));
 
         std::cout << "Triangle passes tests" << std::endl;
         
@@ -152,9 +175,9 @@ int main(int argc, const char * argv[]) {
     int height = 200;
     int ns = 100;
     file << "P3\n" << width << " " << height << "\n255\n";
-    Vec3 lower_left(-2,-1,-1);
-    Vec3 horizontal(4,0,0);
-    Vec3 vertical(0,2,0);
+    Vec3 lower_left(-4,-2,-2);
+    Vec3 horizontal(8,0,0);
+    Vec3 vertical(0,4,0);
     Vec3 origin(0,0,0);
     Vec3 look_from(1,2,2);
     Vec3 look_at(0,0,-1);
@@ -171,7 +194,7 @@ int main(int argc, const char * argv[]) {
         aperture,
         dist_to_focus
     );
-    int num_items = 6;
+    int num_items = 7;
     std::vector<Hitable> list;
     std::shared_ptr<Material> sphere0_matrl = std::make_shared<Lambertian>(Vec3(.8,.3,.3));
     list.push_back(Hitable(Sphere(Vec3(0,0,-1), .5, sphere0_matrl)));
@@ -185,6 +208,12 @@ int main(int argc, const char * argv[]) {
     list.push_back(Hitable(Sphere(Vec3(-1,0,-1), -.45, sphere4_matrl)));
     std::shared_ptr<Material> sphere5_matrl = std::make_shared<Metal>(Vec3(.3,.6,.7),.5);
     list.push_back(Hitable(Sphere(Vec3(2,0,-2), .7, sphere5_matrl)));
+    list.push_back(Hitable(Triangle(
+        Vec3(-3.5,-1,-1),
+        Vec3(-1.5,-1,-1),
+        Vec3(-2.5,1,-1),
+        sphere5_matrl
+    )));
     HitableList *world = new HitableList(list, num_items);
     for (int j = height; j>= 0; --j) {
         for (int i = 0; i < width; ++i) {
