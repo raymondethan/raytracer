@@ -21,10 +21,11 @@ Vec3 color(const Ray& r, HitableList *world, int depth) {
     HitRecord rec;
     // will DBL_MAX work with the -Ofast compiler flag?
     if (world->hit(r, 0.001, DBL_MAX, rec)) {
+        rec.bias_shadow();
         Ray scattered(Vec3(0,0,0),Vec3(0,0,0));
         Vec3 attenuation;
 
-        if (depth < 50 && rec.matrl_ptr->scatter(r, rec, attenuation, scattered)) {
+        if (depth < 10 && rec.matrl_ptr->scatter(r, rec, attenuation, scattered)) {
             return attenuation*color(scattered, world, depth+1);
          }
         return Vec3(0,0,0);
@@ -171,9 +172,9 @@ int main(int argc, const char * argv[]) {
 
     std::ofstream file;
     file.open("img.ppm");
-    int width = 400;
-    int height = 200;
-    int ns = 100;
+    int width = 300;
+    int height = 150;
+    int ns = 25;
     file << "P3\n" << width << " " << height << "\n255\n";
     Vec3 lower_left(-4,-2,-2);
     Vec3 horizontal(8,0,0);
@@ -194,26 +195,44 @@ int main(int argc, const char * argv[]) {
         aperture,
         dist_to_focus
     );
-    int num_items = 7;
+    int num_items = 25;
     std::vector<Hitable> list;
-    std::shared_ptr<Material> sphere0_matrl = std::make_shared<Lambertian>(Vec3(.8,.3,.3));
-    list.push_back(Hitable(Sphere(Vec3(0,0,-1), .5, sphere0_matrl)));
-    std::shared_ptr<Material> sphere1_matrl = std::make_shared<Lambertian>(Vec3(.8,.8,0));
-    list.push_back(Hitable(Sphere(Vec3(0,-100.5,-1), 100, sphere1_matrl)));
-    std::shared_ptr<Material> sphere2_matrl = std::make_shared<Metal>(Vec3(.8,.6,.2),.3);
-    list.push_back(Hitable(Sphere(Vec3(1,0,-1), .5, sphere2_matrl)));
-    std::shared_ptr<Material> sphere3_matrl = std::make_shared<Dielectric>(1.5);
-    list.push_back(Hitable(Sphere(Vec3(-1,0,-1), .5, sphere3_matrl)));
-    std::shared_ptr<Material> sphere4_matrl = std::make_shared<Dielectric>(1.5);
-    list.push_back(Hitable(Sphere(Vec3(-1,0,-1), -.45, sphere4_matrl)));
-    std::shared_ptr<Material> sphere5_matrl = std::make_shared<Metal>(Vec3(.3,.6,.7),.5);
-    list.push_back(Hitable(Sphere(Vec3(2,0,-2), .7, sphere5_matrl)));
+    std::vector<std::shared_ptr<Material>> materials;
+    size_t num_materials = 5;
+    std::shared_ptr<Material> ground = std::make_shared<Lambertian>(Vec3(.8,.3,.3));
+    materials.push_back(std::make_shared<Lambertian>(Vec3(.8,.8,0)));
+    materials.push_back(std::make_shared<Metal>(Vec3(.8,.6,.2),.3));
+    materials.push_back(std::make_shared<Dielectric>(1.5));
+    materials.push_back(std::make_shared<Dielectric>(1.5));
+    materials.push_back(std::make_shared<Metal>(Vec3(.3,.6,.7),.5));
+    list.push_back(Hitable(Sphere(Vec3(0,-100.5,-1), 100, ground)));
+    list.push_back(Hitable(Sphere(Vec3(0,0,-1), .5, materials[0])));
+    list.push_back(Hitable(Sphere(Vec3(1,0,-1), .5, materials[1])));
+    list.push_back(Hitable(Sphere(Vec3(-1,0,-1), .5, materials[2])));
+    list.push_back(Hitable(Sphere(Vec3(-1,0,-1), -.45, materials[3])));
+    list.push_back(Hitable(Sphere(Vec3(2,0,-2), .7, materials[4])));
     list.push_back(Hitable(Triangle(
         Vec3(-3.5,-1,-1),
         Vec3(-1.5,-1,-1),
         Vec3(-2.5,1,-1),
-        sphere5_matrl
+        materials[4]
     )));
+    list.push_back(Hitable(Triangle(
+        Vec3(-2.5,1,-1),
+        Vec3(-1.5,-1,-1),
+        Vec3(-.9,.7,-1.1),
+        materials[4] 
+    )));
+    std::srand(1);
+    for (size_t i = 8; i < num_items; ++i) {
+        double matrl_num = rand() % num_materials;
+        double x = (rand() % 5 - 2) - (double)rand() / RAND_MAX;
+        double y = (rand() % 3 - 1) - (double)rand() / RAND_MAX;
+        double z = (rand() % 2 - 2) - (double)rand() / RAND_MAX;
+        double radius = std::min(((double)rand() / RAND_MAX) + .03, .3);
+        //std::cout << "x: " << x << ", y: " << y << ", z: " << z << ", radius: " << radius << std::endl;
+        list.push_back(Hitable(Sphere(Vec3(x,y,z), radius, materials[matrl_num])));
+    }
     HitableList *world = new HitableList(list, num_items);
     for (int j = height; j>= 0; --j) {
         for (int i = 0; i < width; ++i) {
