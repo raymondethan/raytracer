@@ -6,6 +6,7 @@
 #include "Ray.h"
 #include "Material.h"
 #include "HitRecord.h"
+#include "BoundingBox.h"
 
 class Triangle {
     public:
@@ -20,12 +21,14 @@ class Triangle {
 			xy(y - x),
 			xz(z - x),
 			normal(xy.cross(xz)),
-			matrl_ptr(matrl_ptr) {
+			matrl_ptr(matrl_ptr),
+            box({x,y,z}) {
                 normal = normal.unit_vec();
             }
 
         ~Triangle() {}
         bool intersect_point(const Vec3 &p) const;
+        bool hit_bounding_box(const Ray& ray) const;
         bool hit(
             const Ray &r,
             double t_min,
@@ -41,6 +44,7 @@ class Triangle {
         Vec3 xz;
         Vec3 normal;
         std::shared_ptr<Material> matrl_ptr;
+        BoundingBox box;
 };
 
 inline bool Triangle::intersect_point(const Vec3 &p) const {
@@ -67,6 +71,10 @@ inline bool Triangle::intersect_point(const Vec3 &p) const {
 
     // Check if point is in triangle
     return (u + v <= 1);
+}
+
+inline bool Triangle::hit_bounding_box(const Ray& ray) const {
+    return box.intersect(ray);
 }
 
 inline bool Triangle::hit(

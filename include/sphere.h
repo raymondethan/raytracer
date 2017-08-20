@@ -12,6 +12,7 @@ class Sphere {
         Sphere(Vec3 center, double radius, std::shared_ptr<Material> matrl_ptr);
         ~Sphere();
         bool intersect_point(const Vec3 &p) const;
+        bool hit_bounding_box(const Ray& ray) const;
         bool hit(
             const Ray &r,
             double t_min,
@@ -34,6 +35,10 @@ inline Sphere::~Sphere() {}
 
 inline bool Sphere::intersect_point(const Vec3 &p) const{
     return (p-center).norm() == radius;
+}
+
+inline bool Sphere::hit_bounding_box(const Ray& ray) const {
+    return true;
 }
 
 inline bool Sphere::hit(

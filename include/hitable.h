@@ -17,7 +17,10 @@ class Hitable {
 
         bool hit(const Ray &r, double t_min, double t_max, HitRecord &rec) const {
             return std::visit([&r, t_min, t_max, &rec](auto&& arg) {
+                if (arg.hit_bounding_box(r)) {
                     return arg.hit(r, t_min, t_max, rec);
+                }
+                return false;
             }, shape);
         }
 

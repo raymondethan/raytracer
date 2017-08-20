@@ -40,6 +40,7 @@ class Vec3 {
         Vec3 operator-=(double t);
         Vec3 operator*(double t) const;
         Vec3 operator/(double t) const;
+        Vec3 inverse() const;
         Vec3 unit_vec() const;
 
         std::size_t length() const;
@@ -187,6 +188,10 @@ inline Vec3 Vec3::operator*(double t) const {
 
 inline Vec3 Vec3::operator/(double t) const {
     return this->operator*(1.0/t);
+}
+
+inline Vec3 Vec3::inverse() const {
+    return Vec3((1/vec[0]), (1/vec[1]), (1/vec[2]));
 }
 
 inline Vec3 Vec3::unit_vec() const {
