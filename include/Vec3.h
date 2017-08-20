@@ -15,13 +15,13 @@ class Vec3 {
         bool equals(Vec3& vec2);
         
         double distanceFrom(Vec3 *other);
-        double getX();
-        double getY();
-        double getZ();
+        double getX() const;
+        double getY() const;
+        double getZ() const;
     
-        double getR();
-        double getG();
-        double getB();
+        double getR() const;
+        double getG() const;
+        double getB() const;
 
         double* getVec();
 
@@ -30,7 +30,8 @@ class Vec3 {
         Vec3 operator+(const Vec3 &rhs) const;
         Vec3 operator-(const Vec3 &rhs) const;
         Vec3 operator*(const Vec3 &rhs) const;
-        double operator[](std::size_t i) const;
+        double& operator[](std::size_t i);
+        const double& operator[](std::size_t i) const;
         Vec3 operator+=(const Vec3 &rhs);
         Vec3 operator-=(const Vec3 &rhs);
         Vec3 operator*=(const Vec3 &rhs);
@@ -86,21 +87,21 @@ inline double Vec3::distanceFrom(Vec3 *other) {
     );
 }
 
-inline double Vec3::getX() {
+inline double Vec3::getX() const {
     return this->vec[0];
 }
 
-inline double Vec3::getY() {
+inline double Vec3::getY() const {
     return this->vec[1];
 }
 
-inline double Vec3::getZ() {
+inline double Vec3::getZ() const {
     return this->vec[2];
 }
         
-inline double Vec3::getR() { return this->getX(); }
-inline double Vec3::getG() { return this->getY(); }
-inline double Vec3::getB() { return this->getZ(); }
+inline double Vec3::getR() const { return this->getX(); }
+inline double Vec3::getG() const { return this->getY(); }
+inline double Vec3::getB() const { return this->getZ(); }
 
 inline double* Vec3::getVec() {
     return vec;
@@ -130,12 +131,20 @@ inline Vec3 Vec3::operator*(const Vec3 &rhs) const {
     return tmp;
 }
 
-inline double Vec3::operator[](std::size_t i) const {
-    if (i >= this->size) {
+inline double& Vec3::operator[](std::size_t i) {
+    if (i >= size) {
         throw std::out_of_range("Index out of range of array");
     }
-    return this->vec[i];
+    return vec[i];
 }
+
+inline const double& Vec3::operator[](std::size_t i) const {
+    if (i >= size) {
+        throw std::out_of_range("Index out of range of array");
+    }
+    return vec[i];
+}
+
 inline Vec3 Vec3::operator+=(const Vec3 &rhs) {
     for (std::size_t i = 0; i < size; ++i) {
         vec[i] += rhs[i];
