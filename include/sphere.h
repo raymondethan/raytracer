@@ -6,6 +6,7 @@
 #include "Ray.h"
 #include "Material.h"
 #include "HitRecord.h"
+#include "BoundingBox.h"
 
 class Sphere {
     public:
@@ -24,12 +25,14 @@ class Sphere {
         Vec3 center;
         double radius;
         std::shared_ptr<Material> matrl_ptr;
+        BoundingBox box;
 };
 
 inline Sphere::Sphere(Vec3 center, double radius, std::shared_ptr<Material> matrl_ptr) :
     center(center),
 	radius(radius),
-	matrl_ptr(matrl_ptr) {}
+	matrl_ptr(matrl_ptr),
+    box(center, radius) {}
 
 inline Sphere::~Sphere() {}
 
@@ -38,7 +41,7 @@ inline bool Sphere::intersect_point(const Vec3 &p) const{
 }
 
 inline bool Sphere::hit_bounding_box(const Ray& ray) const {
-    return true;
+    return box.intersect(ray);
 }
 
 inline bool Sphere::hit(

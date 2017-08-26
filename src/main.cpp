@@ -172,8 +172,8 @@ int main(int argc, const char * argv[]) {
 
     std::ofstream file;
     file.open("img.ppm");
-    int width = 300;
-    int height = 150;
+    int width = 400;
+    int height = 200;
     int ns = 25;
     file << "P3\n" << width << " " << height << "\n255\n";
     Vec3 lower_left(-4,-2,-2);
@@ -195,7 +195,7 @@ int main(int argc, const char * argv[]) {
         aperture,
         dist_to_focus
     );
-    int num_items = 25;
+    int num_items = 8;
     std::vector<Hitable> list;
     std::vector<std::shared_ptr<Material>> materials;
     size_t num_materials = 5;
@@ -230,7 +230,7 @@ int main(int argc, const char * argv[]) {
         double y = (rand() % 3 - 1) - (double)rand() / RAND_MAX;
         double z = (rand() % 2 - 2) - (double)rand() / RAND_MAX;
         double radius = std::min(((double)rand() / RAND_MAX) + .03, .3);
-        //std::cout << "x: " << x << ", y: " << y << ", z: " << z << ", radius: " << radius << std::endl;
+        std::cout << "x: " << x << ", y: " << y << ", z: " << z << ", radius: " << radius << std::endl;
         list.push_back(Hitable(Sphere(Vec3(x,y,z), radius, materials[matrl_num])));
     }
     HitableList *world = new HitableList(list, num_items);
