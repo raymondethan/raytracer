@@ -185,7 +185,7 @@ int main(int argc, const char * argv[]) {
     Vec3 vew_up(0,1,0);
     double dist_to_focus = (look_from - look_at).norm();
     std::cout << "focus: " << dist_to_focus << std::endl;
-    double aperture = 2;
+    double aperture = .4;
     Camera camera(
         look_from,
         look_at,
